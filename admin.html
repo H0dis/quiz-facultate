@@ -53,10 +53,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);padd
 .notice{font-size:.77rem;color:var(--muted);margin-bottom:1rem;line-height:1.6;text-align:left;background:var(--bg);padding:.7rem .9rem;border-radius:8px}
 .bcl{width:100%;padding:.8rem;border:1.5px solid var(--border);border-radius:10px;background:transparent;font-family:'Syne',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;color:var(--ink)}
 .bcl:hover{background:var(--bg)}
-
-/* Stats */
 .stats-section{margin-top:2rem}
-.stats-section h2{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:.75rem;color:var(--ink)}
+.stats-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem}
+.stats-header h2{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--ink)}
+.rbtn{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.35rem .8rem;font-size:.8rem;color:var(--accent);cursor:pointer;font-weight:600;transition:background .15s}
+.rbtn:hover{background:var(--bg)}
+.sheet-link{font-size:.82rem;color:var(--accent);text-decoration:none;display:inline-flex;align-items:center;gap:4px;margin-bottom:.75rem;font-weight:500}
+.sheet-link:hover{text-decoration:underline}
 .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-bottom:1rem}
 .stat-box{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:.875rem;text-align:center}
 .stat-num{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:var(--accent)}
@@ -64,16 +67,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);padd
 .table-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
 table{width:100%;border-collapse:collapse;font-size:.82rem}
 th{text-align:left;padding:.6rem .875rem;background:var(--bg);color:var(--muted);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)}
-td{padding:.65rem .875rem;border-bottom:1px solid var(--border);color:var(--ink)}
+td{padding:.65rem .875rem;border-bottom:1px solid var(--border);color:var(--ink);vertical-align:middle}
 tr:last-child td{border-bottom:none}
-.pill{display:inline-block;padding:2px 8px;border-radius:100px;font-size:.75rem;font-weight:600}
+.pill{display:inline-block;padding:2px 9px;border-radius:100px;font-size:.75rem;font-weight:600}
 .pill-hi{background:#dcfce7;color:#15803d}
 .pill-mid{background:#fef9c3;color:#854d0e}
 .pill-lo{background:#fee2e2;color:#b91c1c}
 .no-data{text-align:center;padding:2rem;color:var(--muted);font-size:.875rem}
-.refresh-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:.4rem .875rem;font-size:.8rem;color:var(--muted);cursor:pointer;margin-left:.5rem}
-.refresh-btn:hover{background:var(--bg)}
-.sheet-link{font-size:.8rem;color:var(--accent);text-decoration:none;display:inline-block;margin-bottom:.75rem}
+.loading{text-align:center;padding:1.5rem;color:var(--muted);font-size:.85rem}
+.spin{display:inline-block;animation:spin 1s linear infinite;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -105,34 +108,32 @@ tr:last-child td{border-bottom:none}
 <div class="errbanner" id="eb">Bifeaza raspunsul corect pentru toate intrebarile!</div>
 <button class="btn" onclick="gen()">Genereaza QR Code &rarr;</button>
 
-<!-- Stats -->
 <div class="stats-section">
-  <h2>
-    Rezultate elevi
-    <button class="refresh-btn" onclick="loadStats()">&#8635; Actualizeaza</button>
-  </h2>
-  <a class="sheet-link" href="https://docs.google.com/spreadsheets/d/1dummylink" target="_blank" id="sheet-link">&#128202; Deschide Google Sheet</a>
+  <div class="stats-header">
+    <h2>Rezultate elevi</h2>
+    <button class="rbtn" onclick="loadStats()">&#8635; Actualizeaza</button>
+  </div>
+  <a class="sheet-link" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTCgTV7voyLDad9K--XXHKoU5F2-Wa6qyY5Bn_xZlMJ-eIj-qTfRlN56smK0swssTBwd6ykx9I7Bcah/pub?gid=0&single=true&output=csv" target="_blank">&#128202; Deschide Google Sheet</a>
   <div class="stats-grid">
-    <div class="stat-box"><div class="stat-num" id="st-total">0</div><div class="stat-lbl">Total elevi</div></div>
-    <div class="stat-box"><div class="stat-num" id="st-pass">0</div><div class="stat-lbl">Au castigat</div></div>
+    <div class="stat-box"><div class="stat-num" id="st-total">—</div><div class="stat-lbl">Total elevi</div></div>
+    <div class="stat-box"><div class="stat-num" id="st-pass">—</div><div class="stat-lbl">Au castigat</div></div>
     <div class="stat-box"><div class="stat-num" id="st-avg">—</div><div class="stat-lbl">Medie scor</div></div>
   </div>
   <div class="table-wrap">
     <table>
       <thead><tr><th>#</th><th>Nume</th><th>Liceu</th><th>Scor</th><th>Ora</th></tr></thead>
-      <tbody id="tbody"><tr><td colspan="5" class="no-data">Niciun elev nu a finalizat inca.</td></tr></tbody>
+      <tbody id="tbody"><tr><td colspan="5" class="loading"><span class="spin">&#9696;</span>Se incarca...</td></tr></tbody>
     </table>
   </div>
 </div>
 
-<!-- Modal QR -->
 <div class="overlay" id="ov">
   <div class="modal">
     <h2>QR Code gata!</h2>
     <p class="msub">Arata sau printeaza la stand. Elevii scaneaza si fac quiz-ul.</p>
     <div class="qrwrap"><div id="qrd"></div></div>
     <div class="minfo" id="mi"></div>
-    <div class="notice">Elevii vin la tine cu scorul pe ecran. Tu verifici daca au atins pragul de <strong id="nt">9</strong>/10 pentru premiu. Datele lor apar automat in sectiunea Rezultate de mai jos.</div>
+    <div class="notice">Elevii vin la tine cu scorul pe ecran. Tu verifici daca au atins pragul de <strong id="nt">9</strong>/10 pentru premiu.</div>
     <button class="bcl" onclick="document.getElementById('ov').classList.remove('open')">Inchide</button>
   </div>
 </div>
@@ -140,8 +141,7 @@ tr:last-child td{border-bottom:none}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 var BASE = 'https://h0dis.github.io/quiz-facultate/quiz.html';
-var SHEET_SCRIPT = 'https://script.google.com/macros/s/AKfycbzFrdoWYqnfSf8sMK8ki45DO4_dYPtw8jiCYm4D__RqoU51DG5Er0dG9hfzP79rc7tS/exec';
-var SHEET_URL = 'https://docs.google.com/spreadsheets/d/'; // updated below via script tag if needed
+var CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTCgTV7voyLDad9K--XXHKoU5F2-Wa6qyY5Bn_xZlMJ-eIj-qTfRlN56smK0swssTBwd6ykx9I7Bcah/pub?gid=0&single=true&output=csv';
 
 var L=['A','B','C','D'];
 var QS=[
@@ -192,39 +192,64 @@ function gen(){
   document.getElementById('ov').classList.add('open');
 }
 
+function parseCSV(text){
+  var lines=text.trim().split('\n');
+  if(lines.length<2)return[];
+  return lines.slice(1).map(function(line){
+    var cols=[];var cur='';var inQ=false;
+    for(var i=0;i<line.length;i++){
+      var ch=line[i];
+      if(ch==='"'){inQ=!inQ;}
+      else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
+      else{cur+=ch;}
+    }
+    cols.push(cur.trim());
+    return cols;
+  });
+}
+
 function loadStats(){
-  fetch(SHEET_SCRIPT+'?action=get')
-    .then(function(r){return r.json();})
-    .then(function(data){
-      if(!data||!data.rows){return;}
-      var rows=data.rows;
-      var thr=parseInt(document.getElementById('thr').value)||9;
+  document.getElementById('tbody').innerHTML='<tr><td colspan="5" class="loading"><span class="spin">&#9696;</span>Se incarca...</td></tr>';
+  var thr=parseInt(document.getElementById('thr').value)||9;
+  fetch(CSV_URL+'&t='+Date.now())
+    .then(function(r){return r.text();})
+    .then(function(text){
+      var rows=parseCSV(text);
       var total=rows.length;
-      var pass=rows.filter(function(r){return parseInt(r[2])>=thr;}).length;
-      var avg=total>0?Math.round(rows.reduce(function(s,r){return s+parseInt(r[2]);},0)/total*10)/10:'—';
       document.getElementById('st-total').textContent=total;
+      if(total===0){
+        document.getElementById('st-pass').textContent='0';
+        document.getElementById('st-avg').textContent='—';
+        document.getElementById('tbody').innerHTML='<tr><td colspan="5" class="no-data">Niciun elev nu a finalizat inca.</td></tr>';
+        return;
+      }
+      var pass=0,sum=0;
+      rows.forEach(function(r){
+        var sc=parseInt(r[2])||0;
+        if(sc>=thr)pass++;
+        sum+=sc;
+      });
       document.getElementById('st-pass').textContent=pass;
-      document.getElementById('st-avg').textContent=avg===''?'—':avg;
-      var tbody=document.getElementById('tbody');
-      if(total===0){tbody.innerHTML='<tr><td colspan="5" class="no-data">Niciun elev nu a finalizat inca.</td></tr>';return;}
-      tbody.innerHTML='';
+      document.getElementById('st-avg').textContent=(sum/total).toFixed(1);
+      var tbody=document.getElementById('tbody');tbody.innerHTML='';
       rows.forEach(function(r,i){
-        var score=parseInt(r[2]);
-        var pct=parseInt(r[3]);
-        var cls=pct>=80?'pill-hi':pct>=50?'pill-mid':'pill-lo';
+        var sc=parseInt(r[2])||0;
+        var pct=parseInt(r[3])||0;
+        var cls=sc>=thr?'pill-hi':sc>=5?'pill-mid':'pill-lo';
         var tr=document.createElement('tr');
-        tr.innerHTML='<td>'+(i+1)+'</td><td>'+r[0]+'</td><td>'+r[1]+'</td><td><span class="pill '+cls+'">'+score+'/10</span></td><td>'+r[4]+'</td>';
+        tr.innerHTML='<td>'+(i+1)+'</td><td><strong>'+r[0]+'</strong></td><td>'+r[1]+'</td><td><span class="pill '+cls+'">'+sc+'/10</span></td><td>'+r[4]+'</td>';
         tbody.appendChild(tr);
       });
     })
     .catch(function(){
-      document.getElementById('tbody').innerHTML='<tr><td colspan="5" class="no-data">Eroare la incarcarea datelor. Apasa Actualizeaza.</td></tr>';
+      document.getElementById('st-total').textContent='!';
+      document.getElementById('tbody').innerHTML='<tr><td colspan="5" class="no-data">Nu se pot incarca datele. Verifica conexiunea.</td></tr>';
     });
 }
 
 render();
 loadStats();
-setInterval(loadStats, 30000);
+setInterval(loadStats,30000);
 </script>
 </body>
 </html>
