@@ -315,6 +315,15 @@ function showResult(){
   },
   body: JSON.stringify(payload)
 });
+fetch(SHEET, {
+  method: 'POST',
+  mode: 'no-cors',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(payload)
+});
+}
 
 init();
 </script>
