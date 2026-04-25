@@ -310,11 +310,12 @@ function showResult(){
   var now=new Date();
   var timeStr=now.getHours()+':'+('0'+now.getMinutes()).slice(-2);
   var payload={name:student.name,school:student.school,score:score,percent:pct,time:timeStr};
-  fetch(SHEET, {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify(payload)
-  }).catch(function(){});
+  var params = '?name=' + encodeURIComponent(student.name) +
+    '&school=' + encodeURIComponent(student.school) +
+    '&score=' + score +
+    '&percent=' + pct +
+    '&time=' + encodeURIComponent(timeStr);
+  new Image().src = SHEET + params;
 }
 
 init();
