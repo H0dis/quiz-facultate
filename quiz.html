@@ -239,17 +239,24 @@ function renderQ(){
   var newCorrectPos=shuffledOpts.indexOf(correctOpt);
 
   var c=document.getElementById('opts');c.innerHTML='';
+  var domOpts=[];
   shuffledOpts.forEach(function(origOi, displayI){
     var opt=q.o[origOi];
     var isCorrect=(origOi===correctOpt);
     var d=document.createElement('div');d.className='opt';
     d.innerHTML='<div class="oltr">'+L[displayI]+'</div><div class="otxt">'+opt+'</div>';
-    d.onclick=(function(ic){return function(){selectA(ic,d);};})(isCorrect);
+    if(isCorrect)d.dataset.correct='1';
     c.appendChild(d);
+    domOpts.push(d);
+  });
+  domOpts.forEach(function(d){
+    var isCorrect=d.dataset.correct==='1';
+    var correctEl=domOpts.find(function(x){return x.dataset.correct==='1';});
+    d.onclick=(function(ic,ce){return function(){selectA(ic,d,ce);};})(isCorrect,correctEl);
   });
 }
 
-function selectA(isCorrect, clickedEl){
+function selectA(isCorrect, clickedEl, correctEl){
   if(answered)return;
   answered=true;
   var opts=document.querySelectorAll('.opt');
@@ -260,11 +267,7 @@ function selectA(isCorrect, clickedEl){
     var fb=document.getElementById('fb');fb.textContent='Corect!';fb.className='fb ok';fb.style.display='block';
   } else {
     clickedEl.classList.add('wrong');
-    // find and highlight correct
-    var allOpts=Array.from(opts);
-    // we stored isCorrect in closure, need to mark the correct one
-    // re-check by re-reading onclick won't work; mark via data attribute approach
-    // Actually let's mark correct during render
+    if(correctEl)correctEl.classList.add('correct');
     var fb=document.getElementById('fb');fb.textContent='Incorect \u2014 raspunsul corect este marcat cu verde.';fb.className='fb nok';fb.style.display='block';
   }
   document.getElementById('btnnext').classList.add('show');
@@ -308,21 +311,10 @@ function showResult(){
   var timeStr=now.getHours()+':'+('0'+now.getMinutes()).slice(-2);
   var payload={name:student.name,school:student.school,score:score,percent:pct,time:timeStr};
   fetch(SHEET, {
-  method: 'POST',
-  mode: 'no-cors',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify(payload)
-});
-fetch(SHEET, {
-  method: 'POST',
-  mode: 'no-cors',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify(payload)
-});
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload)
+  }).catch(function(){});
 }
 
 init();
