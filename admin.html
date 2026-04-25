@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f5f0;--card:#fff;--ink:#1a1814;--muted:#888070;--border:#e8e4dc;--accent:#2d5be3;--green:#16a34a;--green-bg:#f0fdf4;--red:#dc2626;--red-bg:#fef2f2;--r:14px}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);padding:1.25rem 1rem 5rem;max-width:600px;margin:0 auto}
+h1{font-family:'Syne',sans-serif}
+.topbar{display:flex;align-items:center;gap:10px;margin-bottom:1.5rem}
+.logo{width:34px;height:34px;background:var(--accent);border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;flex-shrink:0}
+.topbar h1{font-size:1.15rem}
+.tag{margin-left:auto;font-size:11px;font-weight:600;background:#eef1fc;color:var(--accent);padding:3px 10px;border-radius:100px;text-transform:uppercase;letter-spacing:.05em}
+.box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:.875rem}
+.box-title{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.875rem}
+.field{margin-bottom:.875rem}
+.field label{display:block;font-size:.82rem;font-weight:500;color:var(--muted);margin-bottom:4px}
+.field input{width:100%;padding:.7rem .9rem;border:1px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.93rem;color:var(--ink);background:var(--bg);outline:none;transition:border-color .2s,box-shadow .2s}
+.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(45,91,227,.1)}
+.trow{display:flex;align-items:center;gap:10px}
+.trow input[type=number]{width:72px;text-align:center;font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;padding:.5rem;border:1px solid var(--border);border-radius:9px;background:var(--bg);color:var(--ink);outline:none}
+.trow span{font-size:.88rem;color:var(--muted)}
+.qblock{border:1px solid var(--border);border-radius:11px;padding:1.1rem;margin-bottom:.75rem;background:var(--bg)}
+.qhead{display:flex;gap:9px;align-items:flex-start;margin-bottom:.875rem}
+.qnum{width:26px;height:26px;background:var(--ink);color:#fff;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
+.qtxt{font-size:.9rem;font-weight:500;line-height:1.5}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{display:flex;align-items:center;gap:9px;padding:.6rem .85rem;border:1.5px solid var(--border);border-radius:9px;cursor:pointer;background:var(--card);transition:all .15s;user-select:none}
+.opt:hover{border-color:#bbb;background:#fafaf8}
+.opt.sel{border-color:var(--green);background:var(--green-bg)}
+.oletter{width:22px;height:22px;border-radius:6px;background:var(--border);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:var(--muted);flex-shrink:0;transition:all .15s}
+.opt.sel .oletter{background:var(--green);color:#fff}
+.otext{font-size:.83rem;line-height:1.4;color:var(--ink)}
+.opt.sel .otext{color:var(--green);font-weight:500}
+.check{margin-left:auto;color:var(--green);display:none}
+.opt.sel .check{display:block}
+.errbanner{display:none;background:var(--red-bg);border:1px solid #fca5a5;border-radius:9px;padding:.7rem .9rem;font-size:.85rem;color:var(--red);margin-bottom:.75rem}
+.btn{width:100%;padding:.95rem;background:var(--accent);color:#fff;border:none;border-radius:11px;font-family:'Syne',sans-serif;font-size:.98rem;font-weight:700;cursor:pointer;transition:transform .15s,box-shadow .15s;letter-spacing:.02em}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(45,91,227,.3)}
+.btn:active{transform:scale(.98)}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:center;justify-content:center;padding:1.5rem}
+.overlay.open{display:flex}
+.modal{background:var(--card);border-radius:18px;padding:1.75rem;width:100%;max-width:360px;text-align:center}
+.modal h2{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:.25rem}
+.modal .msub{font-size:.83rem;color:var(--muted);margin-bottom:1.25rem}
+.qrwrap{background:#fff;border:1px solid var(--border);border-radius:12px;padding:1rem;display:inline-block;margin-bottom:1.25rem}
+.minfo{background:var(--bg);border-radius:9px;padding:.8rem 1rem;margin-bottom:1.25rem;text-align:left}
+.mrow{display:flex;justify-content:space-between;font-size:.83rem;padding:3px 0}
+.mrow:not(:last-child){border-bottom:1px solid var(--border)}
+.ml{color:var(--muted)}.mv{font-weight:600}
+.notice{font-size:.77rem;color:var(--muted);margin-bottom:1rem;line-height:1.6;text-align:left;background:var(--bg);padding:.7rem .9rem;border-radius:8px}
+.bcl{width:100%;padding:.8rem;border:1.5px solid var(--border);border-radius:10px;background:transparent;font-family:'Syne',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;color:var(--ink)}
+.bcl:hover{background:var(--bg)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo">Q</div>
+  <h1>Configurare Quiz</h1>
+  <span class="tag">Admin</span>
+</div>
+<div class="box">
+  <div class="box-title">Titlu quiz</div>
+  <div class="field"><label>Titlu (vazut de elevi)</label><input type="text" id="t" value="Quiz Filologie" /></div>
+  <div class="field"><label>Subtitlu</label><input type="text" id="s" value="Facultatea de Litere, Universitatea din Oradea" /></div>
+</div>
+<div class="box">
+  <div class="box-title">Prag pentru premiu</div>
+  <div class="trow"><input type="number" id="thr" value="9" min="1" max="10" /><span>raspunsuri corecte din 10 (elevii nu vad acest prag)</span></div>
+</div>
+<div class="box">
+  <div class="box-title">Bifeaza raspunsul corect la fiecare intrebare</div>
+  <div id="ql"></div>
+</div>
+<div class="errbanner" id="eb">Bifeaza raspunsul corect pentru toate intrebarile!</div>
+<button class="btn" onclick="gen()">Genereaza QR Code &rarr;</button>
+<div class="overlay" id="ov">
+  <div class="modal">
+    <h2>QR Code gata!</h2>
+    <p class="msub">Arata sau printeaza la stand. Elevii scaneaza si fac quiz-ul.</p>
+    <div class="qrwrap"><div id="qrd"></div></div>
+    <div class="minfo" id="mi"></div>
+    <div class="notice">Elevii vin la tine cu scorul pe ecran. Tu verifici daca au atins pragul de <strong id="nt">9</strong>/10 pentru premiu.</div>
+    <button class="bcl" onclick="document.getElementById('ov').classList.remove('open')">Inchide</button>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+var BASE = 'https://h0dis.github.io/quiz-facultate/quiz.html';
+var L = ['A','B','C','D'];
+var QS = [
+  {t:'Ce studiaza etimologia?', o:['Pronuntia','Originea cuvintelor','Structura propozitiei','Sensurile figurate']},
+  {t:'Care este personajul care rosteste celebra replica "a fi sau a nu fi"?', o:['Othello','Romeo','Hamlet','Macbeth']},
+  {t:'Ce limba a influentat cel mai mult vocabularul romanesc modern (sec. XIX)?', o:['Turca','Slavona','Franceza','Greaca']},
+  {t:'Ce autor este asociat cu "stream of consciousness" (flux al constiintei)?', o:['Ernest Hemingway','James Joyce','Mark Twain','George Orwell']},
+  {t:'Cine a fost pedepsit sa impinga vesnic o stanca pe un deal?', o:['Oedip','Perseu','Hercule','Sisif']},
+  {t:'Care dintre aceste limbi NU foloseste alfabet latin?', o:['Spaniola','Poloneza','Greaca','Italiana']},
+  {t:'Care este sensul cuvantului "filologie"?', o:['phobos (frica) + logos (cuvant) = frica de cuvinte','philo (iubire) + logos (discurs) = studiul limbii si al textelor','philos (prieten) + legein (a citi) = arta lecturii','philos (iubire) + graphia (scriere) = arta scrierii creative']},
+  {t:'Ce trasatura defineste cel mai bine modernismul literar?', o:['Respectarea stricta a regulilor clasice','Experimentarea formelor si a perspectivei narative','Povestirea strict cronologica','Excluderea subiectivitatii']},
+  {t:'Ce simbolizeaza figura lui Prometeu in cultura europeana?', o:['Obedienta fata de autoritate','Creatia artistica','Cunoasterea si revolta impotriva limitelor impuse','Ordinea sociala']},
+  {t:'Ce perioada culturala a pus accent pe ratiune, stiinta si progres?', o:['Evul Mediu','Iluminismul','Barocul','Romantismul']}
+];
+var sel = new Array(QS.length).fill(null);
+function render(){
+  var c=document.getElementById('ql'); c.innerHTML='';
+  QS.forEach(function(q,qi){
+    var b=document.createElement('div'); b.className='qblock';
+    var oh='';
+    q.o.forEach(function(opt,oi){
+      oh+='<div class="opt" id="o'+qi+'x'+oi+'" onclick="pick('+qi+','+oi+')"><div class="oletter">'+L[oi]+'</div><div class="otext">'+opt+'</div><span class="check">&#10003;</span></div>';
+    });
+    b.innerHTML='<div class="qhead"><div class="qnum">'+(qi+1)+'</div><div class="qtxt">'+q.t+'</div></div><div class="opts">'+oh+'</div>';
+    c.appendChild(b);
+  });
+}
+function pick(qi,oi){
+  sel[qi]=oi;
+  for(var i=0;i<4;i++){var e=document.getElementById('o'+qi+'x'+i);if(e)e.className='opt'+(i===oi?' sel':'');}
+}
+function gen(){
+  var bad=sel.indexOf(null);
+  var eb=document.getElementById('eb');
+  if(bad!==-1){eb.style.display='block';document.querySelectorAll('.qblock')[bad].scrollIntoView({behavior:'smooth',block:'center'});return;}
+  eb.style.display='none';
+  var title=document.getElementById('t').value.trim()||'Quiz';
+  var sub=document.getElementById('s').value.trim();
+  var thr=parseInt(document.getElementById('thr').value)||9;
+  var url=BASE+'?t='+encodeURIComponent(title)+'&s='+encodeURIComponent(sub)+'&th='+thr+'&a='+sel.join(',');
+  var d=document.getElementById('qrd'); d.innerHTML='';
+  new QRCode(d,{text:url,width:180,height:180,colorDark:'#1a1814',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+  document.getElementById('mi').innerHTML='<div class="mrow"><span class="ml">Titlu</span><span class="mv">'+title+'</span></div><div class="mrow"><span class="ml">Intrebari</span><span class="mv">'+QS.length+'</span></div><div class="mrow"><span class="ml">Prag premiu</span><span class="mv">'+thr+'/'+QS.length+'</span></div>';
+  document.getElementById('nt').textContent=thr;
+  document.getElementById('ov').classList.add('open');
+}
+render();
+</script>
+</body>
+</html>
