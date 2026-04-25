@@ -308,11 +308,13 @@ function showResult(){
   var timeStr=now.getHours()+':'+('0'+now.getMinutes()).slice(-2);
   var payload={name:student.name,school:student.school,score:score,percent:pct,time:timeStr};
   fetch(SHEET, {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify(payload)
-  }).catch(function(){});
-}
+  method: 'POST',
+  mode: 'no-cors',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(payload)
+});
 
 init();
 </script>
